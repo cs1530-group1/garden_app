@@ -246,6 +246,9 @@ public class GardenView extends SurfaceView {
         // Set the color
         circle.getPaint().setColor(p.s.color);
 
+        // Temp hack so that we can see the plants if the bad default colors are still being used
+        if (circle.getPaint().getColor() < 255 && circle.getPaint().getColor() > 0) circle.getPaint().setColor(Color.GREEN);
+
         // Set the proper bounds
         // (p.x, p.y) is the center
         // p.s.size is the species size (unscaled radius)
@@ -486,60 +489,63 @@ public class GardenView extends SurfaceView {
 
                             // Set the mode to Edit
                             mode = GardenMode.EDIT;
-                        }
-                    }
 
-                    // IF the person is not touching the circle and there is a positive delta,
-                    // the person is trying to drag/scroll the background
-                    if (!collision && Math.abs(deltaX) > 0 && Math.abs(deltaY) > 0) {
-                        deltaX = getBackgroundChange(deltaX, background_x, background.getWidth(),view_width);
-                        deltaY = getBackgroundChange(deltaY, background_y, background.getHeight(), view_height);
-
-                        // Move the background
-                        background_x += deltaX;
-                        background_y += deltaY;
-
-                        // Move the circle if it is already been drawn
-                        if (mode == GardenMode.ADD || mode == GardenMode.EDIT)
-                        {
-                            tempPlant.x += deltaX;
-                            tempPlant.y += deltaY;
-                        }
-
-                        // Make sure that all the plants stay on the same place in the garden relative to the background
-                        for (PlantDrawable circle : plantCircles)
-                        {
-
-                            circle.setBounds(positionToBounds(circle.getBounds().centerX() + deltaX, circle.getBounds().centerY() + deltaY, circle.getBounds().width()/2));
-                        }
-
-                    }
-                    // This would be the case when a plant is being selected to be moved
-                    // The person should be able to tap a plant and then move it with the next tap
-                    else if (collision)
-                    {
-                        // Nothing to be done yet
-                    }
-                    // The user is just tapping to put down a circle
-                    else
-                    {
-                        // consider as something else - a screen tap for example
-                        if (mode == GardenMode.ADD || mode == GardenMode.EDIT) {
-                            tempPlant.x = (int) event.getX();
-                            tempPlant.y = (int) event.getY();
+                            // used so here so that the plant is NOT moved on the first tap
                             firstTap = true;
+                        }
+                    } else {
+
+                        // IF the person is not touching the circle and there is a positive delta,
+                        // the person is trying to drag/scroll the background
+                        if (!collision && Math.abs(deltaX) > 0 && Math.abs(deltaY) > 0) {
+                            deltaX = getBackgroundChange(deltaX, background_x, background.getWidth(), view_width);
+                            deltaY = getBackgroundChange(deltaY, background_y, background.getHeight(), view_height);
+
+                            // Move the background
+                            background_x += deltaX;
+                            background_y += deltaY;
+
+                            // Move the circle if it is already been drawn
+                            if (mode == GardenMode.ADD || mode == GardenMode.EDIT) {
+                                tempPlant.x += deltaX;
+                                tempPlant.y += deltaY;
+                            }
+
+                            // Make sure that all the plants stay on the same place in the garden relative to the background
+                            for (PlantDrawable circle : plantCircles) {
+
+                                circle.setBounds(positionToBounds(circle.getBounds().centerX() + deltaX, circle.getBounds().centerY() + deltaY, circle.getBounds().width() / 2));
+                            }
+
+                        }
+                        // This would be the case when a plant is being selected to be moved
+                        // The person should be able to tap a plant and then move it with the next tap
+                        else if (collision) {
+                            // Nothing to be done yet
+                        }
+                        // The user is just tapping to put down a circle
+                        else {
+                            // consider as something else - a screen tap for example
+                            if (mode == GardenMode.ADD || mode == GardenMode.EDIT) {
+                                tempPlant.x = (int) event.getX();
+                                tempPlant.y = (int) event.getY();
+                                firstTap = true;
+                            }
                         }
                     }
                     break;
                 }
             }
 
-            if (mode == GardenMode.ADD || mode == GardenMode.EDIT) {
+            if (mode == GardenMode.ADD || (mode == GardenMode.EDIT && firstTap != true)) {
 
                 // Set the bounds for the circle centered around where the user tapped
                 tempPlantCircle.setBounds(positionToBounds(tempPlant.x, tempPlant.y, (int)(tempPlant.s.size*getRadiusScaleFactor())));
                 Log.d("Garden View", "onTap: x " + tempPlant.x + " y" + tempPlant.y + "\n");
             }
+
+            // Reset the firstTap so that the plant will move on the next tap
+            if (mode == GardenMode.EDIT && firstTap) firstTap = false;
             return true;
         }
 
