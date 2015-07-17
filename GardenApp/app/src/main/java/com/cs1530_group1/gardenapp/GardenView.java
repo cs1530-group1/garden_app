@@ -17,6 +17,7 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.content.res.Resources;
 
+
 /**
  * GardenView : an extension of SurfaceView. Performs the actual drawing of the background
  * garden layout image and the plant circles.
@@ -34,7 +35,7 @@ public class GardenView extends SurfaceView {
     protected int background_y = 0; // The y-coordinate of the upper left hand corner of the background
 
     // The list of circles that corresponds to the list of plants in the garden
-    protected ArrayList<ShapeDrawable> plantCircles = null;
+    protected ArrayList<PlantDrawable> plantCircles = null;
 
     // The garden that we are going to display
     protected Garden garden;
@@ -43,7 +44,7 @@ public class GardenView extends SurfaceView {
     protected SurfaceHolder holder; // Need to register callbacks for the holder of this SurfaceView
 
     // A circle used for adding a new plant or moving an existing one
-    protected ShapeDrawable tempPlantCircle = null;
+    protected PlantDrawable tempPlantCircle = null;
     protected Plant tempPlant = null;
     protected boolean firstTap = false; // Used to make sure a new plant is not drawn before the user taps the screen
 
@@ -220,9 +221,10 @@ public class GardenView extends SurfaceView {
      * @param p
      * @return
      */
-    protected ShapeDrawable plantToCircle(Plant p)
+    protected PlantDrawable plantToCircle(Plant p)
     {
-        ShapeDrawable circle = new ShapeDrawable(new OvalShape());
+        // We will have to use a new Date until p.plantDate is implmented in the Plant calss
+        PlantDrawable circle = new PlantDrawable(new OvalShape(), p.s.name, null);
 
         // Set the color
         circle.getPaint().setColor(p.s.color);
@@ -240,9 +242,9 @@ public class GardenView extends SurfaceView {
      * represent the list of plants
      * @return
      */
-    protected ArrayList<ShapeDrawable> getAllPlantCircles()
+    protected ArrayList<PlantDrawable> getAllPlantCircles()
     {
-        ArrayList<ShapeDrawable> circles = new ArrayList<ShapeDrawable>();
+        ArrayList<PlantDrawable> circles = new ArrayList<PlantDrawable>();
         int i = 0;
 
         // Go through the plant list and make a new circle to represent each plant
@@ -307,7 +309,7 @@ public class GardenView extends SurfaceView {
             canvas.drawBitmap(background, background_x, background_y, null);
 
             // Draw all of the circles
-            for (ShapeDrawable circle : plantCircles) {
+            for (PlantDrawable circle : plantCircles) {
                 circle.draw(canvas);
             }
 
@@ -464,7 +466,7 @@ public class GardenView extends SurfaceView {
                         }
 
                         // Make sure that all the plants stay on the same place in the garden relative to the background
-                        for (ShapeDrawable circle : plantCircles)
+                        for (PlantDrawable circle : plantCircles)
                         {
 
                             circle.setBounds(positionToBounds(circle.getBounds().centerX() + deltaX, circle.getBounds().centerY() + deltaY, circle.getBounds().width()/2));
