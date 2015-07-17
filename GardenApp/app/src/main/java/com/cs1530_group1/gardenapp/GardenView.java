@@ -23,6 +23,7 @@ import android.content.res.Resources;
  * garden layout image and the plant circles.
  */
 public class GardenView extends SurfaceView {
+    GardenDrawingActivity gardenDrawingActivity;
     protected GardenMode mode;
 
     protected Bitmap background; // The background image
@@ -89,6 +90,7 @@ public class GardenView extends SurfaceView {
     // Does the real work when the class is instantiated
     // This is the code that was previously in 'public GardenView(Context context, Garden g)'
     private void constructor(Context c, Garden g) {
+
         App app;
 
         // set the garden
@@ -137,6 +139,21 @@ public class GardenView extends SurfaceView {
     }
 
 
+    /**
+     * findCollision : determines if one of the plant circles contains (x,y)
+     * @param x
+     * @param y
+     * @return : returns the plant circle if there is a collisioin, otherwise return null
+     */
+    protected  PlantDrawable findCollision(int x, int y)
+    {
+        for (PlantDrawable circle : plantCircles) {
+            if (circle.getBounds().contains(x, y)) return circle;
+        }
+        return null;
+    }
+
+    
     // Sets up the Garden View so that another plant can be added
     public void addAnotherPlant() {
         setNewPlantSpecies(tempPlant.s.name);
@@ -417,6 +434,7 @@ public class GardenView extends SurfaceView {
         private int x2 = 0;
         private int y1 = 0;
         private int y2 = 0;
+        private long startTime;
 
         @Override
         public boolean onTouch(View v, MotionEvent event)
@@ -433,6 +451,8 @@ public class GardenView extends SurfaceView {
                 {
                     x1 = (int) event.getX();
                     y1 = (int) event.getY();
+                    // Record the start time for determining if this is a 'long press'
+                    startTime = System.currentTimeMillis();
                     break;
                 }
                 case MotionEvent.ACTION_UP:
@@ -447,6 +467,27 @@ public class GardenView extends SurfaceView {
                     // Determine if the person pressed on the circle
                     //collision = tempPlantCircle.getBounds().contains(x1, y1);
 
+                    // It is a long press if the difference is greater than 1 second (1000 milliseconds)
+                    if (1000 < System.currentTimeMillis() - startTime)
+                    {
+                        // See if the person touched one of the circles
+                        PlantDrawable temp = findCollision(x1, y1);
+
+                        // A circle was touched, so change the tempPlantCircle to the circle that was touched
+                        if (temp != null) {
+                            tempPlantCircle = temp;
+
+                            // We need to set the species name of the GardenDrawingActivity so that
+                            // if someone presses View Species Info, it goes to the right species
+                            gardenDrawingActivity.speciesName = tempPlantCircle.getSpecies();
+
+                            // Bring up the panel
+                            gardenDrawingActivity.showButtonPanel(tempPlantCircle.getSpecies() + "\n" + tempPlantCircle.getPlantDate());
+
+                            // Set the mode to Edit
+                            mode = GardenMode.EDIT;
+                        }
+                    }
 
                     // IF the person is not touching the circle and there is a positive delta,
                     // the person is trying to drag/scroll the background
@@ -459,7 +500,7 @@ public class GardenView extends SurfaceView {
                         background_y += deltaY;
 
                         // Move the circle if it is already been drawn
-                        if (mode == GardenMode.ADD)
+                        if (mode == GardenMode.ADD || mode == GardenMode.EDIT)
                         {
                             tempPlant.x += deltaX;
                             tempPlant.y += deltaY;
@@ -483,7 +524,7 @@ public class GardenView extends SurfaceView {
                     else
                     {
                         // consider as something else - a screen tap for example
-                        if (mode == GardenMode.ADD) {
+                        if (mode == GardenMode.ADD || mode == GardenMode.EDIT) {
                             tempPlant.x = (int) event.getX();
                             tempPlant.y = (int) event.getY();
                             firstTap = true;
@@ -493,7 +534,7 @@ public class GardenView extends SurfaceView {
                 }
             }
 
-            if (mode == GardenMode.ADD) {
+            if (mode == GardenMode.ADD || mode == GardenMode.EDIT) {
 
                 // Set the bounds for the circle centered around where the user tapped
                 tempPlantCircle.setBounds(positionToBounds(tempPlant.x, tempPlant.y, (int)(tempPlant.s.size*getRadiusScaleFactor())));
