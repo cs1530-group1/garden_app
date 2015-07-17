@@ -94,7 +94,7 @@ public class GardenViewTest extends ActivityTestCase {
      */
     public void testGetAllPlantCircles() throws Exception {
         GardenView gv = new GardenView(getInstrumentation().getTargetContext(), new Garden());
-        ArrayList<ShapeDrawable> plantCircles;
+        ArrayList<PlantDrawable> plantCircles;
         int tomatoColor = Color.RED;
         int tomatoSize = 5;
         int tomatoX = 0;
