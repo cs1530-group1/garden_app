@@ -64,19 +64,10 @@ public class GardenDrawingActivity extends ActionBarActivity {
         // of a plant to be added -- We need to set the Button Panel to visible and decrease the
         // width of the Garden View
         if (speciesName != null) {
-            // Get the screen width
-            int width = getScreenWidth();
 
-            // Set the panel to visible
-            buttonPanel.setVisibility(View.VISIBLE);
-
-            // Get the layout parameters for the GardenView and for the Button Panel
-            LayoutParams params = gardenView.getLayoutParams();
-            LayoutParams panel_params = buttonPanel.getLayoutParams();
-
-            // Set the GardenView width to the screen width - the Button Panel width
-            params.width = width - panel_params.width;
-            gardenView.setLayoutParams(params);
+            // Reveal button panel
+            // The text of the TextView will be set to speciesName
+            showButtonPanel(speciesName);
 
             // Set the mode to ADD so the GardenView knows to render the temporary plant
             gardenView.setMode(GardenMode.ADD);
@@ -84,11 +75,32 @@ public class GardenDrawingActivity extends ActionBarActivity {
             // Set the species to be added
             gardenView.setNewPlantSpecies(speciesName);
 
-            // Set the plant info text to the species name
-            setPlantInfo(speciesName);
 
         } // Else: Set the mode to VIEW so that the temporary plant is not rendered
         else gardenView.setMode(GardenMode.VIEW);
+    }
+
+    // Refactored from onCreate()
+    // Does everything necessary to show the Button Panel in the layout, which
+    // is invisible from the start
+    public void showButtonPanel(String speciesInfo)
+    {
+        // Get the screen width
+        int width = getScreenWidth();
+
+        // Set the panel to visible
+        buttonPanel.setVisibility(View.VISIBLE);
+
+        // Get the layout parameters for the GardenView and for the Button Panel
+        LayoutParams params = gardenView.getLayoutParams();
+        LayoutParams panel_params = buttonPanel.getLayoutParams();
+
+        // Set the GardenView width to the screen width - the Button Panel width
+        params.width = width - panel_params.width;
+        gardenView.setLayoutParams(params);
+
+        // Set the plant info text
+        setPlantInfo(speciesInfo);
     }
 
     // Set the string in the Plant Info TextView
