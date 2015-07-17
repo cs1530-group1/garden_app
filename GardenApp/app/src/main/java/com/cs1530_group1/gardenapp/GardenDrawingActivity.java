@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import android.widget.TextView;
+import android.widget.Button;
 
 /**
  * GardenDrawingActivity : the graphical front end for drawing plants on top of the
@@ -103,6 +104,32 @@ public class GardenDrawingActivity extends ActionBarActivity {
         setPlantInfo(speciesInfo);
     }
 
+    /**
+     * Expands and shows the remove button
+     * Should be used when going to EDIT mode
+     */
+    public void showRemoveButton()
+    {
+        // Get the Remove Button and the Confirm Button
+        Button removeButton = (Button) findViewById(R.id.Remove);
+
+        // Set the Remove Button to visible
+        removeButton.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Compresses and hides the Remove Button
+     * Should be used when leaving CANCEL mode
+     */
+    public void hideRemoveButton()
+    {
+        // Get the Remove Button and the Confirm Button
+        Button removeButton = (Button) findViewById(R.id.Remove);
+
+        // Set the Remove Button to invisible
+        removeButton.setVisibility(View.GONE);
+    }
+
     // Set the string in the Plant Info TextView
     public void setPlantInfo(String s)
     {
@@ -170,6 +197,8 @@ public class GardenDrawingActivity extends ActionBarActivity {
     public void addAnotherClicked(View view)
     {
         //Toast.makeText(this, "Add Another not yet implemented", Toast.LENGTH_SHORT).show();
+        hideRemoveButton();
+        setPlantInfo(speciesName);
         gardenView.addAnotherPlant();
     }
 
@@ -188,15 +217,16 @@ public class GardenDrawingActivity extends ActionBarActivity {
         params.width = getScreenWidth();
         gardenView.setLayoutParams(params);
 
-        // Set the mode to ADD so the GardenView knows to render the temporary plant
-        gardenView.setMode(GardenMode.VIEW);
+        // Let the GardenView know that cancel was clicked
+        gardenView.cancel();
     }
 
     // Services the Remove button on the panel of buttons -- the functionality has not yet been
     // implemented
     public void removeClicked(View view)
     {
-        Toast.makeText(this, "Remove not yet implemented", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Remove not yet implemented", Toast.LENGTH_SHORT).show();
+        gardenView.remove();
     }
 
     // Services the View Species button on the panel of buttons -- starts the ViewSpeciesInfoActivity
