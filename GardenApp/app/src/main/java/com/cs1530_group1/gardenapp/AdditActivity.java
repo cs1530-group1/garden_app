@@ -228,12 +228,5 @@ public class AdditActivity extends ActionBarActivity {
         Toast.makeText(getApplicationContext(),"This feature is not yet implemented", Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * let's the user pick the date used as a species plantdate
-     * @param view unused
-     */
-    public void startDatePicker(View view) {
-        Log.e(LOG_TAG, "datePicker is not yet implemented");
-        Toast.makeText(getApplicationContext(),"This feature is not yet implemented", Toast.LENGTH_SHORT).show();
-    }
+   
 }
