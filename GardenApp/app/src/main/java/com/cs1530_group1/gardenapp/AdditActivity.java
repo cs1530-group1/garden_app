@@ -12,6 +12,8 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+
 /**
  * This activity handles both the adding of a new plant, and the editing of an existing plant.
  *
@@ -172,9 +174,20 @@ public class AdditActivity extends ActionBarActivity {
         garden.setSize(speciesName, Integer.parseInt(getEditTextText(R.id.size_box)));
         garden.setSunLevel(speciesName, getEditTextText(R.id.sun_box));
         garden.setSpeciesType(speciesName,evalTypeRadioButtons());
-        //todo dates
+
         //todo colors
-        //todo save
+
+        /* saving the garden */
+        try {
+            Log.v(LOG_TAG,"saving garden");
+            Log.v(LOG_TAG,"Garden String: " + Garden.gardenToString(garden));
+            FileOperation.save(App.SAVEFILE_NAME,Garden.gardenToString(garden));
+        } catch (IOException e) {
+            Log.e(LOG_TAG,"unambe to save garden", e);
+            Toast.makeText(getApplicationContext(),"Unable to save garden",Toast.LENGTH_SHORT).show();
+        }
+
+        /* launching the next activity */ 
         Log.v(LOG_TAG, "Launching view info activity");
         Intent intent = new Intent(getApplicationContext(),ViewSpeciesInfoActivity.class);
         intent.putExtra(Intent.EXTRA_TEXT,speciesName);
