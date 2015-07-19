@@ -130,43 +130,18 @@
             android:layout_alignEnd="@+id/radioGroup_type"
             android:inputType="text" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/plant_date_title"
-            android:id="@+id/plant_data_title"
-            android:layout_below="@+id/sun_title"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_toLeftOf="@+id/sun_box"
-            android:layout_toStartOf="@+id/sun_box"
-            android:layout_alignBottom="@+id/plant_date_viewer"
-            android:gravity="center_vertical"
-            android:textColor="@android:color/black" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/abc_text_size_display_2_material"
-            android:text="@string/filler_text"
-            android:id="@+id/plant_date_viewer"
-            android:layout_below="@+id/sun_title"
-            android:layout_toRightOf="@+id/sun_title"
-            android:layout_alignRight="@+id/sun_box"
-            android:layout_alignEnd="@+id/sun_box"
-            android:onClick="startDatePicker"
-            android:gravity="center_vertical|center_horizontal"
-            android:textColor="@android:color/black" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/size_title"
             android:id="@+id/size_title"
-            android:layout_below="@+id/plant_data_title"
+            android:layout_below="@+id/sun_title"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_toLeftOf="@+id/plant_date_viewer"
-            android:layout_toStartOf="@+id/plant_date_viewer"
+            android:layout_toLeftOf="@+id/sun_box"
+            android:layout_toStartOf="@+id/sun_box"
             android:layout_alignBottom="@+id/size_box"
             android:textColor="@android:color/black"
             android:gravity="center_vertical" />
@@ -175,7 +150,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/size_box"
-            android:layout_below="@+id/plant_data_title"
+            android:layout_below="@+id/sun_title"
             android:layout_toRightOf="@+id/size_title"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
