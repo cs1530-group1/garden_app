@@ -188,7 +188,6 @@ public class AdditActivity extends ActionBarActivity {
      */
     protected String getEditTextText(int id){
         EditText editText = (EditText)findViewById(id);
-        Log.d(LOG_TAG, "todo: remove all symbols from text");
         String str = editText.getText().toString();
         return removeSymbols(str);
     }
@@ -228,5 +227,5 @@ public class AdditActivity extends ActionBarActivity {
         Toast.makeText(getApplicationContext(),"This feature is not yet implemented", Toast.LENGTH_SHORT).show();
     }
 
-   
+
 }
