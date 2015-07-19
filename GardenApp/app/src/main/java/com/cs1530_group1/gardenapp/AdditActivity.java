@@ -37,8 +37,9 @@ public class AdditActivity extends ActionBarActivity {
 
         Intent intent = getIntent();
         String speciesName = intent.getStringExtra(Intent.EXTRA_TEXT);
+        //if speciesName is not null, then we received a plant to edit
         if(speciesName!=null){
-            setupEditMode(speciesName);
+            setupEditMode(speciesName); //edit mode is slightly different than add mode
         }
 
     }
@@ -187,7 +188,7 @@ public class AdditActivity extends ActionBarActivity {
             Toast.makeText(getApplicationContext(),"Unable to save garden",Toast.LENGTH_SHORT).show();
         }
 
-        /* launching the next activity */ 
+        /* launching the next activity */
         Log.v(LOG_TAG, "Launching view info activity");
         Intent intent = new Intent(getApplicationContext(),ViewSpeciesInfoActivity.class);
         intent.putExtra(Intent.EXTRA_TEXT,speciesName);
