@@ -163,13 +163,16 @@ public class ViewSpeciesInfoActivity extends ActionBarActivity {
 
     /**
      * called when a user clicks on the 'add to garden' button
+     *
+     * This method is to launch the GardenDrawingActivity with the current species' name passed so that it can be added to the garden
+     * by the user.  This is to be handled in GardenDrawingActivity.java
      * @param view unused
      */
     public void addToGarden(View view) {
 
         Log.v(LOG_TAG,"add to garden");
         Log.d(LOG_TAG, "launching GardenDrawingActivity to add a (" + speciesName + ") to the garden");
-        
+
         Intent intent = new Intent(getApplicationContext(),GardenDrawingActivity.class);
         intent.putExtra(Intent.EXTRA_TEXT,speciesName);
         startActivity(intent);
