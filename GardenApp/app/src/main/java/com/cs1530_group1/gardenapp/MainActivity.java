@@ -107,20 +107,20 @@ public class MainActivity extends ActionBarActivity {
         newGarden.addSpecies("tomato");
         newGarden.setColor("tomato", Color.RED);
         newGarden.setDescription("tomato", "my red tomato!");
-        newGarden.setPlantDate("tomato", new Date(1993, 12, 1));
+        //newGarden.setPlantDate("tomato", new Date(1993, 12, 1));
         newGarden.setSize("tomato", 25);
         newGarden.setSpeciesType("tomato", "Annual");
         newGarden.setSunLevel("tomato", "low");
-        newGarden.setPruneDate("tomato", "m0nthly");
+        //newGarden.setPruneDate("tomato", "m0nthly");
 
         newGarden.addSpecies("sunflower");
         newGarden.setColor("sunflower", Color.YELLOW);
         newGarden.setDescription("sunflower", "my yellow sunflower!");
-        newGarden.setPlantDate("sunflower", new Date(1980, 12, 1));
+        //newGarden.setPlantDate("sunflower", new Date(1980, 12, 1));
         newGarden.setSize("sunflower", 50);
         newGarden.setSpeciesType("sunflower", "Perennial");
         newGarden.setSunLevel("sunflower", "high");
-        newGarden.setPruneDate("sunflower", "dont need to prune");
+        //newGarden.setPruneDate("sunflower", "dont need to prune");
 
         app.setGarden(newGarden);
 

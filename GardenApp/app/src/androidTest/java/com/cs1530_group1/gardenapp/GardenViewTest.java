@@ -117,9 +117,9 @@ public class GardenViewTest extends ActivityTestCase {
         gv.garden.setSize("Sunflower", sunflowerSize);
 
         // Add some a tomato and a sunflower to the garden
-        gv.garden.addPlant(tomatoX, tomatoY, "Tomato");
+        gv.garden.addPlant(tomatoX, tomatoY, null, null, "Tomato");
 
-        gv.garden.addPlant(sunflowerX, sunflowerY, "Sunflower");
+        gv.garden.addPlant(sunflowerX, sunflowerY, null, null, "Sunflower");
 
         // Get the list of plant circles
         plantCircles = gv.getAllPlantCircles();
