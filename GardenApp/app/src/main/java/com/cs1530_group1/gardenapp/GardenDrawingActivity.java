@@ -229,9 +229,9 @@ public class GardenDrawingActivity extends ActionBarActivity {
         gardenView.remove();
 
         // Save the garden
-        try {
+        /*try {
             FileOperation.save(App.SAVEFILE_NAME, Garden.gardenToString(g));
-        }catch(Exception e){e.printStackTrace();}
+        }catch(Exception e){e.printStackTrace();}*/
     }
 
     // Services the View Species button on the panel of buttons -- starts the ViewSpeciesInfoActivity

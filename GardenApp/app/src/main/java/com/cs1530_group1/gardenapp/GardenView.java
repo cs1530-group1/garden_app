@@ -48,6 +48,7 @@ public class GardenView extends SurfaceView {
     protected boolean firstTap = false; // Used to make sure a new plant is not drawn before the user taps the screen
     protected int oldPlantX = 0;
     protected int oldPlantY = 0;
+    protected boolean confirmPressed = false; // Used to keep cancel from moving back a plant that was confirmed
 
     protected DrawingThread drawingThread; // The drawing thread
 
@@ -144,7 +145,9 @@ public class GardenView extends SurfaceView {
     {
         if (mode == GardenMode.EDIT)
         {
-            garden.removePlant(tempPlant.x,tempPlant.y);
+            confirmPressed = false;
+
+            garden.removePlant(tempPlant.x, tempPlant.y);
             for (int i = 0; i < plantCircles.size(); i++)
             {
                 PlantDrawable circle = plantCircles.get(i);
@@ -166,9 +169,21 @@ public class GardenView extends SurfaceView {
         if (mode == GardenMode.EDIT) {
             GardenDrawingActivity gardenDrawingActivity = (GardenDrawingActivity)getContext();
             tempPlantCircle.setBounds(positionToBounds(oldPlantX, oldPlantY, (int)(tempPlant.s.size*getRadiusScaleFactor())));
+
+            // Check to see if the plant was removed from the garden -- put it back and save
+            if (confirmPressed == false && garden.movePlant(oldPlantX, oldPlantY, oldPlantX, oldPlantY) == false) {
+                garden.addPlant(oldPlantX, oldPlantY, tempPlant.plantDate, tempPlant.pruneDate, tempPlant.s.name);
+                plantCircles.add(tempPlantCircle);
+
+                // Save the garden
+                try {
+                    FileOperation.save(App.SAVEFILE_NAME, Garden.gardenToString(garden));
+                }catch(Exception e){e.printStackTrace();}
+            }
             gardenDrawingActivity.hideRemoveButton();
         }
         mode = GardenMode.VIEW;
+        confirmPressed = false;
     }
 
 
@@ -209,8 +224,10 @@ public class GardenView extends SurfaceView {
             // temporary plant not to be drawn
             setMode(GardenMode.VIEW);
             firstTap = false;
+            confirmPressed = true;
         } else if (mode == GardenMode.EDIT) {
             garden.movePlant(oldPlantX, oldPlantY, tempPlant.x, tempPlant.y);
+            confirmPressed = true;
         }
     }
 
