@@ -41,6 +41,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.cs1530_group1.gardenapp.SpeciesListActivity" />
         </activity>
+        <activity
+            android:name=".AdditActivity"
+            android:label="@string/title_activity_addit"
+            android:parentActivityName=".ViewSpeciesInfoActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.cs1530_group1.gardenapp.ViewSpeciesInfoActivity" />
+        </activity>
     </application>
 
 </manifest>
