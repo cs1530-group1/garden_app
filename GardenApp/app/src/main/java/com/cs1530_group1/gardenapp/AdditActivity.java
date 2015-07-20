@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -41,6 +40,8 @@ public class AdditActivity extends ActionBarActivity {
         if(speciesName!=null){
             setupEditMode(speciesName); //edit mode is slightly different than add mode
         }
+        if(getSupportActionBar()!=null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
     }
 
