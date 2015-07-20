@@ -227,6 +227,11 @@ public class GardenDrawingActivity extends ActionBarActivity {
     {
         //Toast.makeText(this, "Remove not yet implemented", Toast.LENGTH_SHORT).show();
         gardenView.remove();
+
+        // Save the garden
+        try {
+            FileOperation.save(App.SAVEFILE_NAME, Garden.gardenToString(g));
+        }catch(Exception e){e.printStackTrace();}
     }
 
     // Services the View Species button on the panel of buttons -- starts the ViewSpeciesInfoActivity
