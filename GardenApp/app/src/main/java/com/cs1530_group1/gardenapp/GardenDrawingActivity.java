@@ -46,7 +46,6 @@ public class GardenDrawingActivity extends ActionBarActivity {
         // Retrieve the species name of the plant being added if
         // this activity is being started from Add Plant
         speciesName = getIntent().getStringExtra(Intent.EXTRA_TEXT);
-        if (speciesName == null) speciesName = "sunflower";
         
         super.onCreate(savedInstanceState);
 
