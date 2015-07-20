@@ -122,7 +122,7 @@ public class GardenView extends SurfaceView {
     {
         if (mode == GardenMode.ADD) {
             // Add to the library
-            garden.addPlant(tempPlant.x, tempPlant.y, tempPlant.s.name);
+            garden.addPlant(tempPlant.x, tempPlant.y, null, null, tempPlant.s.name);
 
             // Add to the list of circles
             plantCircles.add(tempPlantCircle);
@@ -137,7 +137,7 @@ public class GardenView extends SurfaceView {
     // GardenDrawingActivity determines if a new plant is being added
     public void setNewPlantSpecies(String speciesName)
     {
-        tempPlant = new Plant(0, 0, garden.getSpeciesInfo(speciesName));
+        tempPlant = new Plant(0, 0, null, null, garden.getSpeciesInfo(speciesName));
 
         // Temp hack to make sure that the plant can be seen while debugging new code
         //if (tempPlant.s.color < 255 && tempPlant.s.color > 0) tempPlant.s.color = Color.GREEN;
