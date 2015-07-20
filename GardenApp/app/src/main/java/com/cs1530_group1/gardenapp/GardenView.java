@@ -43,6 +43,7 @@ public class GardenView extends SurfaceView {
     // A circle used for adding a new plant or moving an existing one
     protected ShapeDrawable tempPlantCircle = null;
     protected Plant tempPlant = null;
+    protected boolean firstTap = false; // Used to make sure a new plant is not drawn before the user taps the screen
 
     protected DrawingThread drawingThread; // The drawing thread
 
@@ -111,9 +112,7 @@ public class GardenView extends SurfaceView {
     {
         setNewPlantSpecies(tempPlant.s.name);
         mode = GardenMode.ADD;
-
-        // Temp hack to make sure that the plant can be seen while debugging new code
-        //if (tempPlant.s.color < 255 && tempPlant.s.color > 0) tempPlant.s.color = Color.GREEN;
+        firstTap = false;
     }
 
     // ConfirmNewPlantLocation : add the plant to the plant list
@@ -130,6 +129,7 @@ public class GardenView extends SurfaceView {
             // Exit add mode -- this will not cause the panel to disappear, just causes the
             // temporary plant not to be drawn
             setMode(GardenMode.VIEW);
+            firstTap = false;
         }
     }
 
@@ -138,9 +138,6 @@ public class GardenView extends SurfaceView {
     public void setNewPlantSpecies(String speciesName)
     {
         tempPlant = new Plant(0, 0, null, null, garden.getSpeciesInfo(speciesName));
-
-        // Temp hack to make sure that the plant can be seen while debugging new code
-        //if (tempPlant.s.color < 255 && tempPlant.s.color > 0) tempPlant.s.color = Color.GREEN;
 
         // Set the new plant to 0,0 and retrieve its species from the garden interface
         tempPlantCircle = plantToCircle(tempPlant);
@@ -262,10 +259,10 @@ public class GardenView extends SurfaceView {
             }
 
             // Only draw the temporary plant in ADD mode
-            if (mode == GardenMode.ADD) {
+            if (mode == GardenMode.ADD && firstTap) {
                 // Draw the new plant
                 tempPlantCircle.draw(canvas);
-                Log.d("Garden View", "onDraw: color" + tempPlantCircle.getPaint().getColor() + " x " + tempPlantCircle.getBounds().centerX() + " y " + tempPlantCircle.getBounds().centerY() + "\n");
+                //Log.d("Garden View", "onDraw: color" + tempPlantCircle.getPaint().getColor() + " x " + tempPlantCircle.getBounds().centerX() + " y " + tempPlantCircle.getBounds().centerY() + "\n");
             }
 
 
@@ -434,6 +431,7 @@ public class GardenView extends SurfaceView {
                         if (mode == GardenMode.ADD) {
                             tempPlant.x = (int) event.getX();
                             tempPlant.y = (int) event.getY();
+                            firstTap = true;
                         }
                     }
                     break;
