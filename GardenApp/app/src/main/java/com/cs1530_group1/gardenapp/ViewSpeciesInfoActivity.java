@@ -166,9 +166,10 @@ public class ViewSpeciesInfoActivity extends ActionBarActivity {
      * @param view unused
      */
     public void addToGarden(View view) {
-        /* logs and alerts that add is not yet ready for the user */
-        Log.e(LOG_TAG, "add to Garden is not yet Implemented");
-        Toast.makeText(getApplicationContext(),"This feature is not yet implemented", Toast.LENGTH_SHORT).show();
-        //all this will need to do is create & launch an intent with the species name bundled in for glenn's GardenDrawingActivity, when he's ready for it
+
+
+        Intent intent = new Intent(getApplicationContext(),GardenDrawingActivity.class);
+        intent.putExtra(Intent.EXTRA_TEXT,speciesName);
+        startActivity(intent);
     }
 }
