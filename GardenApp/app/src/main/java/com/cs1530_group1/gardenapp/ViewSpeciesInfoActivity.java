@@ -167,7 +167,9 @@ public class ViewSpeciesInfoActivity extends ActionBarActivity {
      */
     public void addToGarden(View view) {
 
-
+        Log.v(LOG_TAG,"add to garden");
+        Log.d(LOG_TAG, "launching GardenDrawingActivity to add a (" + speciesName + ") to the garden");
+        
         Intent intent = new Intent(getApplicationContext(),GardenDrawingActivity.class);
         intent.putExtra(Intent.EXTRA_TEXT,speciesName);
         startActivity(intent);
