@@ -65,18 +65,11 @@ public class AdditActivity extends ActionBarActivity {
 
         String type = garden.getSpeciesType(speciesName);
         selectTypeRadio(type);
-        setDateText(garden.getPlantDate(speciesName).toString());
+
 
     }
 
-    /**
-     * sets the string in the plant_date_view to date
-     * @param date the string to be used
-     */
-    protected void setDateText(String date){
-        TextView textView = (TextView)findViewById(R.id.plant_date_viewer);
-        textView.setText(date);
-    }
+
 
     /**
      * checks the correct radio based on the string type
