@@ -77,8 +77,10 @@ public class SpeciesListActivityFragment extends Fragment {
 
                 Log.v(LOG_TAG, "*click*");
                 if(position==0){
-                    Log.e(LOG_TAG,"This feature is not yet implemented");
-                    Toast.makeText(getActivity(),"Adding a new plant is not yet implemented",Toast.LENGTH_SHORT).show();
+                    //Log.e(LOG_TAG, "This feature is not yet implemented");
+                    //Toast.makeText(getActivity(),"Adding a new plant is not yet implemented",Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getActivity(),AdditActivity.class);
+                    startActivity(intent);
                 }
                 else {
                     Intent intent = new Intent(getActivity(), ViewSpeciesInfoActivity.class);
