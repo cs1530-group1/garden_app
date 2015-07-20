@@ -45,6 +45,7 @@ public class GardenDrawingActivity extends ActionBarActivity {
         // Retrieve the species name of the plant being added if
         // this activity is being started from Add Plant
         speciesName = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+        if (speciesName == null) speciesName = "sunflower";
         
         super.onCreate(savedInstanceState);
 
@@ -144,6 +145,11 @@ public class GardenDrawingActivity extends ActionBarActivity {
     {
         //Toast.makeText(this, "Confirm not yet implemented", Toast.LENGTH_SHORT).show();
         gardenView.confirmNewPlantLocation();
+
+        // Save the garden
+        try {
+            FileOperation.save(App.SAVEFILE_NAME, Garden.gardenToString(g));
+        }catch(Exception e){e.printStackTrace();}
 
     }
 
