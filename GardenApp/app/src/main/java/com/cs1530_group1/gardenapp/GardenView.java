@@ -523,7 +523,13 @@ public class GardenView extends SurfaceView {
 
                             // Add the Remove Button and bring up the panel
                             gardenDrawingActivity.showRemoveButton();
-                            gardenDrawingActivity.showButtonPanel(tempPlantCircle.getSpecies() + "\n" + tempPlantCircle.getPlantDate());
+                            String infoString;
+
+                            // Only add the date if it is not null
+                            if (tempPlantCircle.getPlantDate() != null)infoString = tempPlantCircle.getSpecies() + "\n" + tempPlantCircle.getPlantDate();
+                            else infoString = tempPlantCircle.getSpecies() + "\n";
+                            
+                            gardenDrawingActivity.showButtonPanel(infoString);
 
                             // Set the mode to Edit
                             mode = GardenMode.EDIT;
