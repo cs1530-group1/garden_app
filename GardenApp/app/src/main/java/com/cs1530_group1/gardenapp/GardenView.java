@@ -262,7 +262,7 @@ public class GardenView extends SurfaceView {
             if (mode == GardenMode.ADD && firstTap) {
                 // Draw the new plant
                 tempPlantCircle.draw(canvas);
-                Log.d("Garden View", "onDraw: color" + tempPlantCircle.getPaint().getColor() + " x " + tempPlantCircle.getBounds().centerX() + " y " + tempPlantCircle.getBounds().centerY() + "\n");
+                //Log.d("Garden View", "onDraw: color" + tempPlantCircle.getPaint().getColor() + " x " + tempPlantCircle.getBounds().centerX() + " y " + tempPlantCircle.getBounds().centerY() + "\n");
             }
 
 
