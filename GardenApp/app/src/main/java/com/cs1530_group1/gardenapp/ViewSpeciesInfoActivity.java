@@ -84,12 +84,12 @@ public class ViewSpeciesInfoActivity extends ActionBarActivity {
         setText(R.id.species_sun,sunString);
 
         //set plant date TextView
-        String plantDateString = "<b>Plant Date:</b><br />"+garden.getPlantDate(speciesName);
-        setText(R.id.species_plant_date,plantDateString);
+        //String plantDateString = "<b>Plant Date:</b><br />"+garden.getPlantDate(speciesName);
+        //setText(R.id.species_plant_date,plantDateString);
 
         //set prune date TextView
-        String pruneDateString = "<b>Prune Date:</b><br />"+garden.getPruneDate(speciesName);
-        setText(R.id.species_prune_date,pruneDateString);
+        //String pruneDateString = "<b>Prune Date:</b><br />"+garden.getPruneDate(speciesName);
+        //setText(R.id.species_prune_date,pruneDateString);
 
         //set size TextView
         String sizeString = "<b>Size:</b><br />"  + garden.getSize(speciesName);
