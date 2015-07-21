@@ -49,6 +49,7 @@ public class GardenView extends SurfaceView {
     protected int oldPlantX = 0;
     protected int oldPlantY = 0;
     protected boolean confirmPressed = false; // Used to keep cancel from moving back a plant that was confirmed
+    protected boolean removingPlant = false;
 
     protected DrawingThread drawingThread; // The drawing thread
 
@@ -147,8 +148,8 @@ public class GardenView extends SurfaceView {
         if (mode == GardenMode.EDIT)
         {
             confirmPressed = false;
+            removingPlant = true;
 
-            garden.removePlant(tempPlant.x, tempPlant.y);
             for (int i = 0; i < plantCircles.size(); i++)
             {
                 PlantDrawable circle = plantCircles.get(i);
@@ -167,24 +168,20 @@ public class GardenView extends SurfaceView {
      */
     public void cancel()
     {
-        if (mode == GardenMode.EDIT) {
+        if (mode == GardenMode.EDIT && confirmPressed == false) {
             GardenDrawingActivity gardenDrawingActivity = (GardenDrawingActivity)getContext();
             tempPlantCircle.setBounds(positionToBounds(oldPlantX, oldPlantY, (int)(tempPlant.s.size*getRadiusScaleFactor())));
 
             // Check to see if the plant was removed from the garden -- put it back and save
-            if (confirmPressed == false && garden.movePlant(oldPlantX, oldPlantY, oldPlantX, oldPlantY) == false) {
-                garden.addPlant(oldPlantX, oldPlantY, tempPlant.plantDate, tempPlant.pruneDate, tempPlant.s.name);
+            if (removingPlant) {
                 plantCircles.add(tempPlantCircle);
 
-                // Save the garden
-                try {
-                    FileOperation.save(App.SAVEFILE_NAME, Garden.gardenToString(garden));
-                }catch(Exception e){e.printStackTrace();}
             }
             gardenDrawingActivity.hideRemoveButton();
         }
         mode = GardenMode.VIEW;
         confirmPressed = false;
+        removingPlant = false;
     }
 
 
@@ -208,6 +205,7 @@ public class GardenView extends SurfaceView {
         setNewPlantSpecies(tempPlant.s.name);
         mode = GardenMode.ADD;
         firstTap = false;
+        removingPlant = false;
     }
 
     // ConfirmNewPlantLocation : add the plant to the plant list
@@ -227,7 +225,11 @@ public class GardenView extends SurfaceView {
             firstTap = false;
             confirmPressed = true;
         } else if (mode == GardenMode.EDIT) {
-            garden.movePlant(oldPlantX, oldPlantY, tempPlant.x, tempPlant.y);
+
+            if (removingPlant) garden.removePlant(tempPlant.x, tempPlant.y);
+            else garden.movePlant(oldPlantX, oldPlantY, tempPlant.x, tempPlant.y);
+
+            firstTap = false;
             confirmPressed = true;
         }
     }
