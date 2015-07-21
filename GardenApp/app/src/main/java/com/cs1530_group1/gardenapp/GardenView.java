@@ -214,7 +214,7 @@ public class GardenView extends SurfaceView {
     // and make it permanent
     public void confirmNewPlantLocation()
     {
-        if (mode == GardenMode.ADD) {
+        if (mode == GardenMode.ADD && firstTap) {
             // Add to the library
             garden.addPlant(tempPlant.x, tempPlant.y, null, null, tempPlant.s.name);
 
