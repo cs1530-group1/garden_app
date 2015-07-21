@@ -199,7 +199,7 @@
 
         <EditText
             android:textColor="@android:color/black"
-            
+
             android:digits="0123456789ABCDEF"
             android:inputType="textCapCharacters"
             android:maxLength="6"

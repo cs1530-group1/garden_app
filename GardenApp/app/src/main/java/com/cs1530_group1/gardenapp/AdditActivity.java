@@ -165,12 +165,12 @@ public class AdditActivity extends ActionBarActivity {
             Log.d(LOG_TAG,"added new species, " + speciesName);
             garden.addSpecies(speciesName);
         }
-        garden.setDescription(speciesName,getEditTextText(R.id.description_box));
+        garden.setDescription(speciesName, getEditTextText(R.id.description_box));
         garden.setSize(speciesName, Integer.parseInt(getEditTextText(R.id.size_box)));
         garden.setSunLevel(speciesName, getEditTextText(R.id.sun_box));
         garden.setSpeciesType(speciesName,evalTypeRadioButtons());
 
-        //todo colors
+        setColor(getEditTextText(R.id.color_box),garden,speciesName);
 
         /* saving the garden */
         try {
@@ -226,14 +226,21 @@ public class AdditActivity extends ActionBarActivity {
         return null;
     }
 
+
     /**
-     * this should launch the color picker activity, so the user can pick the color to represent that plant on the gardenView
-     * @param view unused
+     * this method takes the hex color given by the user, adds in the alpha and saves it to the garden.
+     * @param hexColor the user provided hex String
+     * @param garden the garden storing all this data
+     * @param speciesName the name of the plant with the color
      */
-    public void startColorPicker(View view) {
-        Log.e(LOG_TAG, "colorPicker is not yet implemented");
-        Toast.makeText(getApplicationContext(),"This feature is not yet implemented", Toast.LENGTH_SHORT).show();
-    }
+   protected void setColor(String hexColor, Garden garden, String speciesName){
+       int color = Integer.parseInt(hexColor,16);
+
+       color += 0xff000000;
+       Log.v(LOG_TAG, "color = " + color);
+       garden.setColor(speciesName,color);
+
+   }
 
 
 }
