@@ -132,12 +132,13 @@ public class GardenView extends SurfaceView {
 
     // Gets the App so that the background image can be gotten/set
     private App getApp() {
-        GardenDrawingActivity gda = (GardenDrawingActivity)getContext();
-        App app = null;
         try {
+            GardenDrawingActivity gda = (GardenDrawingActivity)getContext();
+            App app = null;
             app = (App)gda.getApplication();
-        } catch (Exception e) { e.printStackTrace();}
-        return app;
+            return app;
+        } catch (Exception e) { e.printStackTrace(); return null;}
+
     }
 
 
