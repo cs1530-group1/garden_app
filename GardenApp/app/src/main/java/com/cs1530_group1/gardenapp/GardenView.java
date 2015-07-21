@@ -88,6 +88,8 @@ public class GardenView extends SurfaceView {
     // Does the real work when the class is instantiated
     // This is the code that was previously in 'public GardenView(Context context, Garden g)'
     private void constructor(Context c, Garden g) {
+        App app;
+
         // set the garden
         garden = g;
 
@@ -101,12 +103,36 @@ public class GardenView extends SurfaceView {
         holder = getHolder();
         holder.addCallback(new GardenHolderCallback());
 
-        // Open the background image as a bitmap
-        background = loadBitmapImage(R.drawable.background);
+        // Try to get the app and get the background image
+        app = getApp();
+        if (app != null) {
+            background = app.getBackgroundImage();
+
+            if (background == null) {
+                // Open the background image as a bitmap
+                background = loadBitmapImage(R.drawable.background);
+
+                app.setBackgroundImage(background);
+            }
+        } else {
+
+            // Open the background image as a bitmap
+            background = loadBitmapImage(R.drawable.background);
+        }
 
         // Initially there should be a list of plants -- produce a list of circles from the plants
         plantCircles = getAllPlantCircles();
 
+    }
+
+    // Gets the App so that the background image can be gotten/set
+    private App getApp() {
+        GardenDrawingActivity gda = (GardenDrawingActivity)getContext();
+        App app = null;
+        try {
+            app = (App)gda.getApplication();
+        } catch (Exception e) { e.printStackTrace();}
+        return app;
     }
 
 
