@@ -147,14 +147,7 @@ public class GardenDrawingActivity extends ActionBarActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        if (id == R.id.species_list) {
-            Log.v(LOG_TAG, "Starting SpeciesListActivity");
-            Intent intent = new Intent(this, SpeciesListActivity.class);
-            startActivity(intent);
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -231,18 +224,6 @@ public class GardenDrawingActivity extends ActionBarActivity {
         /*try {
             FileOperation.save(App.SAVEFILE_NAME, Garden.gardenToString(g));
         }catch(Exception e){e.printStackTrace();}*/
-    }
-
-    // Services the View Species button on the panel of buttons -- starts the ViewSpeciesInfoActivity
-    public void viewSpeciesClicked(View view)
-    {
-        Log.v(LOG_TAG, "Starting SpeciesListActivity");
-        Intent intent = new Intent(this, ViewSpeciesInfoActivity.class);
-
-        // Pass in the name of the species
-        intent.putExtra(Intent.EXTRA_TEXT, speciesName);
-
-        startActivity(intent);
     }
     
 
