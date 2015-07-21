@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.shapes.OvalShape;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -14,6 +15,7 @@ import android.view.SurfaceView;
 import java.util.ArrayList;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.content.res.Resources;
 
 /**
  * GardenView : an extension of SurfaceView. Performs the actual drawing of the background
@@ -107,9 +109,9 @@ public class GardenView extends SurfaceView {
 
     }
 
+
     // Sets up the Garden View so that another plant can be added
-    public void addAnotherPlant()
-    {
+    public void addAnotherPlant() {
         setNewPlantSpecies(tempPlant.s.name);
         mode = GardenMode.ADD;
         firstTap = false;
@@ -232,10 +234,35 @@ public class GardenView extends SurfaceView {
      */
     protected Bitmap loadBitmapImage(int imageResourceNumber)
     {
+        Bitmap originalImage = null;
         try {
-            return BitmapFactory.decodeResource(getResources(), imageResourceNumber);
-        }catch(Exception e){return null;}
+            originalImage = BitmapFactory.decodeResource(getResources(), imageResourceNumber);
+            Context c = getContext();
+            int width = originalImage.getWidth();
+            int height = originalImage.getHeight();
+            int nwidth = (int) convertPixelsToDp(width,c);
+            int nheight = (int) convertPixelsToDp(height,c);
+
+            Bitmap bitmapResized = Bitmap.createScaledBitmap(originalImage, nwidth*2, nheight*2, false);
+
+            return bitmapResized;
+        }catch(Exception e) {
+            Log.v("loadBitmapImage", "scaled failed");
+            e.printStackTrace();
+            if (originalImage != null) return originalImage;
+            else return null;
+        }
     }
+
+    // conversion  -- from Stack Overflow
+    // http://stackoverflow.com/questions/21666396/scale-bitmap-on-surfaceview-for-smaller-high-density-screens
+    public static float convertPixelsToDp(float px, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float dp = px / (metrics.densityDpi / 160f);
+        return dp;
+    }
+
 
     /**
      * onDraw : actually performs the drawing calls on the SurfaceView's canvas
