@@ -236,9 +236,9 @@ public class AdditActivity extends ActionBarActivity {
    protected void setColor(String hexColor, Garden garden, String speciesName){
        int color = Integer.parseInt(hexColor,16);
 
-       color += 0xff000000;
-       Log.v(LOG_TAG, "color = " + color);
-       garden.setColor(speciesName,color);
+       color += 0xff000000; //this sets the alpha
+       Log.v(LOG_TAG, "color = " + color); //very verbose logging
+       garden.setColor(speciesName,color); //actual setting of the color
 
    }
 

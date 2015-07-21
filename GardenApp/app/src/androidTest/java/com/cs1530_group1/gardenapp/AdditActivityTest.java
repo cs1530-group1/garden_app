@@ -10,6 +10,10 @@ import junit.framework.TestCase;
  */
 public class AdditActivityTest extends TestCase {
 
+     /*
+     this set of tests tests setting the color by a hex string
+      */
+
     @SmallTest
     public void testSetColor() throws Exception {
         Garden garden = new Garden();
