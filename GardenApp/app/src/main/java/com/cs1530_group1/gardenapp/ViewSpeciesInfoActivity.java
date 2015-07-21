@@ -173,8 +173,15 @@ public class ViewSpeciesInfoActivity extends ActionBarActivity {
         Log.v(LOG_TAG,"add to garden");
         Log.d(LOG_TAG, "launching GardenDrawingActivity to add a (" + speciesName + ") to the garden");
 
+        if(((App)getApplication()).getGarden().getSpeciesInfo(speciesName)==null){
+            Log.e(LOG_TAG, "Trying to add a plant to the garden when the species (" + speciesName + ") does not exist");
+            Toast.makeText(getApplicationContext(), "There was an error. return to the main menu and try again", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
         Intent intent = new Intent(getApplicationContext(),GardenDrawingActivity.class);
-        intent.putExtra(Intent.EXTRA_TEXT,speciesName);
+        intent.putExtra(Intent.EXTRA_TEXT, speciesName);
         startActivity(intent);
     }
 }
