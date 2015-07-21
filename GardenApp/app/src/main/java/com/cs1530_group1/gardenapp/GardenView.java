@@ -10,12 +10,12 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
-import android.graphics.drawable.*;
 import android.view.SurfaceView;
 import java.util.ArrayList;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.content.res.Resources;
+
 
 /**
  * GardenView : an extension of SurfaceView. Performs the actual drawing of the background
@@ -34,7 +34,7 @@ public class GardenView extends SurfaceView {
     protected int background_y = 0; // The y-coordinate of the upper left hand corner of the background
 
     // The list of circles that corresponds to the list of plants in the garden
-    protected ArrayList<ShapeDrawable> plantCircles = null;
+    protected ArrayList<PlantDrawable> plantCircles = null;
 
     // The garden that we are going to display
     protected Garden garden;
@@ -43,9 +43,12 @@ public class GardenView extends SurfaceView {
     protected SurfaceHolder holder; // Need to register callbacks for the holder of this SurfaceView
 
     // A circle used for adding a new plant or moving an existing one
-    protected ShapeDrawable tempPlantCircle = null;
+    protected PlantDrawable tempPlantCircle = null;
     protected Plant tempPlant = null;
     protected boolean firstTap = false; // Used to make sure a new plant is not drawn before the user taps the screen
+    protected int oldPlantX = 0;
+    protected int oldPlantY = 0;
+    protected boolean confirmPressed = false; // Used to keep cancel from moving back a plant that was confirmed
 
     protected DrawingThread drawingThread; // The drawing thread
 
@@ -88,6 +91,7 @@ public class GardenView extends SurfaceView {
     // Does the real work when the class is instantiated
     // This is the code that was previously in 'public GardenView(Context context, Garden g)'
     private void constructor(Context c, Garden g) {
+
         App app;
 
         // set the garden
@@ -125,17 +129,80 @@ public class GardenView extends SurfaceView {
 
     }
 
+
     // Gets the App so that the background image can be gotten/set
     private App getApp() {
-        GardenDrawingActivity gda = (GardenDrawingActivity)getContext();
-        App app = null;
         try {
+            GardenDrawingActivity gda = (GardenDrawingActivity)getContext();
+            App app = null;
             app = (App)gda.getApplication();
-        } catch (Exception e) { e.printStackTrace();}
-        return app;
+            return app;
+        } catch (Exception e) { e.printStackTrace(); return null;}
+
     }
 
 
+    public void remove()
+    {
+        if (mode == GardenMode.EDIT)
+        {
+            confirmPressed = false;
+
+            garden.removePlant(tempPlant.x, tempPlant.y);
+            for (int i = 0; i < plantCircles.size(); i++)
+            {
+                PlantDrawable circle = plantCircles.get(i);
+                // Check to see if they match
+                if (circle.getBounds().centerX() == tempPlant.x && circle.getBounds().centerY() == tempPlant.y) {
+                    plantCircles.remove(i);
+                    return;
+                }
+            }
+
+        }
+    }
+
+    /**
+     * Needed so that the moved plant is reset to its original location
+     */
+    public void cancel()
+    {
+        if (mode == GardenMode.EDIT) {
+            GardenDrawingActivity gardenDrawingActivity = (GardenDrawingActivity)getContext();
+            tempPlantCircle.setBounds(positionToBounds(oldPlantX, oldPlantY, (int)(tempPlant.s.size*getRadiusScaleFactor())));
+
+            // Check to see if the plant was removed from the garden -- put it back and save
+            if (confirmPressed == false && garden.movePlant(oldPlantX, oldPlantY, oldPlantX, oldPlantY) == false) {
+                garden.addPlant(oldPlantX, oldPlantY, tempPlant.plantDate, tempPlant.pruneDate, tempPlant.s.name);
+                plantCircles.add(tempPlantCircle);
+
+                // Save the garden
+                try {
+                    FileOperation.save(App.SAVEFILE_NAME, Garden.gardenToString(garden));
+                }catch(Exception e){e.printStackTrace();}
+            }
+            gardenDrawingActivity.hideRemoveButton();
+        }
+        mode = GardenMode.VIEW;
+        confirmPressed = false;
+    }
+
+
+    /**
+     * findCollision : determines if one of the plant circles contains (x,y)
+     * @param x
+     * @param y
+     * @return : returns the plant circle if there is a collisioin, otherwise return null
+     */
+    protected  PlantDrawable findCollision(int x, int y)
+    {
+        for (PlantDrawable circle : plantCircles) {
+            if (circle.getBounds().contains(x, y)) return circle;
+        }
+        return null;
+    }
+
+    
     // Sets up the Garden View so that another plant can be added
     public void addAnotherPlant() {
         setNewPlantSpecies(tempPlant.s.name);
@@ -147,7 +214,7 @@ public class GardenView extends SurfaceView {
     // and make it permanent
     public void confirmNewPlantLocation()
     {
-        if (mode == GardenMode.ADD) {
+        if (mode == GardenMode.ADD && firstTap) {
             // Add to the library
             garden.addPlant(tempPlant.x, tempPlant.y, null, null, tempPlant.s.name);
 
@@ -158,6 +225,10 @@ public class GardenView extends SurfaceView {
             // temporary plant not to be drawn
             setMode(GardenMode.VIEW);
             firstTap = false;
+            confirmPressed = true;
+        } else if (mode == GardenMode.EDIT) {
+            garden.movePlant(oldPlantX, oldPlantY, tempPlant.x, tempPlant.y);
+            confirmPressed = true;
         }
     }
 
@@ -169,7 +240,6 @@ public class GardenView extends SurfaceView {
 
         // Set the new plant to 0,0 and retrieve its species from the garden interface
         tempPlantCircle = plantToCircle(tempPlant);
-        Log.d("Garden View", "setNewPlantSpecies: size " + tempPlant.s.size + " color " + tempPlant.s.color + " green " + Color.GREEN + "\n");
     }
 
     // Sets the mode of the garden -- whether to add new plants or just view, etc
@@ -220,12 +290,16 @@ public class GardenView extends SurfaceView {
      * @param p
      * @return
      */
-    protected ShapeDrawable plantToCircle(Plant p)
+    protected PlantDrawable plantToCircle(Plant p)
     {
-        ShapeDrawable circle = new ShapeDrawable(new OvalShape());
+        // We will have to use a new Date until p.plantDate is implmented in the Plant calss
+        PlantDrawable circle = new PlantDrawable(new OvalShape(), p.s.name, null);
 
         // Set the color
         circle.getPaint().setColor(p.s.color);
+
+        // Temp hack so that we can see the plants if the bad default colors are still being used
+        if (circle.getPaint().getColor() < 255 && circle.getPaint().getColor() > 0) circle.getPaint().setColor(Color.GREEN);
 
         // Set the proper bounds
         // (p.x, p.y) is the center
@@ -240,9 +314,9 @@ public class GardenView extends SurfaceView {
      * represent the list of plants
      * @return
      */
-    protected ArrayList<ShapeDrawable> getAllPlantCircles()
+    protected ArrayList<PlantDrawable> getAllPlantCircles()
     {
-        ArrayList<ShapeDrawable> circles = new ArrayList<ShapeDrawable>();
+        ArrayList<PlantDrawable> circles = new ArrayList<PlantDrawable>();
         int i = 0;
 
         // Go through the plant list and make a new circle to represent each plant
@@ -307,7 +381,7 @@ public class GardenView extends SurfaceView {
             canvas.drawBitmap(background, background_x, background_y, null);
 
             // Draw all of the circles
-            for (ShapeDrawable circle : plantCircles) {
+            for (PlantDrawable circle : plantCircles) {
                 circle.draw(canvas);
             }
 
@@ -415,6 +489,7 @@ public class GardenView extends SurfaceView {
         private int x2 = 0;
         private int y1 = 0;
         private int y2 = 0;
+        private long startTime;
 
         @Override
         public boolean onTouch(View v, MotionEvent event)
@@ -431,6 +506,8 @@ public class GardenView extends SurfaceView {
                 {
                     x1 = (int) event.getX();
                     y1 = (int) event.getY();
+                    // Record the start time for determining if this is a 'long press'
+                    startTime = System.currentTimeMillis();
                     break;
                 }
                 case MotionEvent.ACTION_UP:
@@ -445,58 +522,89 @@ public class GardenView extends SurfaceView {
                     // Determine if the person pressed on the circle
                     //collision = tempPlantCircle.getBounds().contains(x1, y1);
 
-
-                    // IF the person is not touching the circle and there is a positive delta,
-                    // the person is trying to drag/scroll the background
-                    if (!collision && Math.abs(deltaX) > 0 && Math.abs(deltaY) > 0) {
-                        deltaX = getBackgroundChange(deltaX, background_x, background.getWidth(),view_width);
-                        deltaY = getBackgroundChange(deltaY, background_y, background.getHeight(), view_height);
-
-                        // Move the background
-                        background_x += deltaX;
-                        background_y += deltaY;
-
-                        // Move the circle if it is already been drawn
-                        if (mode == GardenMode.ADD)
-                        {
-                            tempPlant.x += deltaX;
-                            tempPlant.y += deltaY;
-                        }
-
-                        // Make sure that all the plants stay on the same place in the garden relative to the background
-                        for (ShapeDrawable circle : plantCircles)
-                        {
-
-                            circle.setBounds(positionToBounds(circle.getBounds().centerX() + deltaX, circle.getBounds().centerY() + deltaY, circle.getBounds().width()/2));
-                        }
-
-                    }
-                    // This would be the case when a plant is being selected to be moved
-                    // The person should be able to tap a plant and then move it with the next tap
-                    else if (collision)
+                    // It is a long press if the difference is greater than 1 second (1000 milliseconds)
+                    if (1000 < System.currentTimeMillis() - startTime)
                     {
-                        // Nothing to be done yet
-                    }
-                    // The user is just tapping to put down a circle
-                    else
-                    {
-                        // consider as something else - a screen tap for example
-                        if (mode == GardenMode.ADD) {
-                            tempPlant.x = (int) event.getX();
-                            tempPlant.y = (int) event.getY();
-                            firstTap = true;
+                        // See if the person touched one of the circles
+                        PlantDrawable temp = findCollision(x1, y1);
+
+                        // A circle was touched, so change the tempPlantCircle to the circle that was touched
+                        if (temp != null) {
+                            tempPlantCircle = temp;
+                            // Make the temp plant a new plant of the same species
+                            tempPlant = new Plant(tempPlantCircle.getBounds().centerX(), tempPlantCircle.getBounds().centerY(), null, null, garden.getSpeciesInfo(tempPlantCircle.getSpecies()));
+
+                            // We need to set the species name of the GardenDrawingActivity so that
+                            // if someone presses View Species Info, it goes to the right species
+                            GardenDrawingActivity gardenDrawingActivity = (GardenDrawingActivity)getContext();
+                            gardenDrawingActivity.speciesName = tempPlantCircle.getSpecies();
+
+                            // Add the Remove Button and bring up the panel
+                            gardenDrawingActivity.showRemoveButton();
+                            String infoString;
+
+                            // Only add the date if it is not null
+                            if (tempPlantCircle.getPlantDate() != null)infoString = tempPlantCircle.getSpecies() + "\n" + tempPlantCircle.getPlantDate();
+                            else infoString = tempPlantCircle.getSpecies() + "\n";
+                            
+                            gardenDrawingActivity.showButtonPanel(infoString);
+
+                            // Set the mode to Edit
+                            mode = GardenMode.EDIT;
+                            oldPlantX = tempPlant.x;
+                            oldPlantY = tempPlant.y;
+                            return true;
+                        }
+                    } else {
+
+                        // IF the person is not touching the circle and there is a positive delta,
+                        // the person is trying to drag/scroll the background
+                        if (!collision && Math.abs(deltaX) > 0 && Math.abs(deltaY) > 0) {
+                            deltaX = getBackgroundChange(deltaX, background_x, background.getWidth(), view_width);
+                            deltaY = getBackgroundChange(deltaY, background_y, background.getHeight(), view_height);
+
+                            // Move the background
+                            background_x += deltaX;
+                            background_y += deltaY;
+
+                            // Move the circle if it is already been drawn
+                            if (mode == GardenMode.ADD || mode == GardenMode.EDIT) {
+                                tempPlant.x += deltaX;
+                                tempPlant.y += deltaY;
+                            }
+
+                            // Make sure that all the plants stay on the same place in the garden relative to the background
+                            for (PlantDrawable circle : plantCircles) {
+
+                                circle.setBounds(positionToBounds(circle.getBounds().centerX() + deltaX, circle.getBounds().centerY() + deltaY, circle.getBounds().width() / 2));
+                            }
+
+                        }
+                        // This would be the case when a plant is being selected to be moved
+                        // The person should be able to tap a plant and then move it with the next tap
+                        else if (collision) {
+                            // Nothing to be done yet
+                        }
+                        // The user is just tapping to put down a circle
+                        else {
+                            // consider as something else - a screen tap for example
+                            if (mode == GardenMode.ADD || mode == GardenMode.EDIT) {
+                                tempPlant.x = (int) event.getX();
+                                tempPlant.y = (int) event.getY();
+                                firstTap = true;
+                            }
                         }
                     }
                     break;
                 }
             }
 
-            if (mode == GardenMode.ADD) {
+            if (mode == GardenMode.ADD || mode == GardenMode.EDIT ) {
 
                 // Set the bounds for the circle centered around where the user tapped
                 tempPlantCircle.setBounds(positionToBounds(tempPlant.x, tempPlant.y, (int)(tempPlant.s.size*getRadiusScaleFactor())));
-                Log.d("Garden View", "onTap: x " + tempPlant.x + " y" + tempPlant.y + "\n");
             }
+
             return true;
         }
 

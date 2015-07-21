@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import android.widget.TextView;
+import android.widget.Button;
 
 /**
  * GardenDrawingActivity : the graphical front end for drawing plants on top of the
@@ -45,7 +46,6 @@ public class GardenDrawingActivity extends ActionBarActivity {
         // Retrieve the species name of the plant being added if
         // this activity is being started from Add Plant
         speciesName = getIntent().getStringExtra(Intent.EXTRA_TEXT);
-        if (speciesName == null) speciesName = "sunflower";
         
         super.onCreate(savedInstanceState);
 
@@ -64,19 +64,10 @@ public class GardenDrawingActivity extends ActionBarActivity {
         // of a plant to be added -- We need to set the Button Panel to visible and decrease the
         // width of the Garden View
         if (speciesName != null) {
-            // Get the screen width
-            int width = getScreenWidth();
 
-            // Set the panel to visible
-            buttonPanel.setVisibility(View.VISIBLE);
-
-            // Get the layout parameters for the GardenView and for the Button Panel
-            LayoutParams params = gardenView.getLayoutParams();
-            LayoutParams panel_params = buttonPanel.getLayoutParams();
-
-            // Set the GardenView width to the screen width - the Button Panel width
-            params.width = width - panel_params.width;
-            gardenView.setLayoutParams(params);
+            // Reveal button panel
+            // The text of the TextView will be set to speciesName
+            showButtonPanel(speciesName);
 
             // Set the mode to ADD so the GardenView knows to render the temporary plant
             gardenView.setMode(GardenMode.ADD);
@@ -84,11 +75,58 @@ public class GardenDrawingActivity extends ActionBarActivity {
             // Set the species to be added
             gardenView.setNewPlantSpecies(speciesName);
 
-            // Set the plant info text to the species name
-            setPlantInfo(speciesName);
 
         } // Else: Set the mode to VIEW so that the temporary plant is not rendered
         else gardenView.setMode(GardenMode.VIEW);
+    }
+
+    // Refactored from onCreate()
+    // Does everything necessary to show the Button Panel in the layout, which
+    // is invisible from the start
+    public void showButtonPanel(String speciesInfo)
+    {
+        // Get the screen width
+        int width = getScreenWidth();
+
+        // Set the panel to visible
+        buttonPanel.setVisibility(View.VISIBLE);
+
+        // Get the layout parameters for the GardenView and for the Button Panel
+        LayoutParams params = gardenView.getLayoutParams();
+        LayoutParams panel_params = buttonPanel.getLayoutParams();
+
+        // Set the GardenView width to the screen width - the Button Panel width
+        params.width = width - panel_params.width;
+        gardenView.setLayoutParams(params);
+
+        // Set the plant info text
+        setPlantInfo(speciesInfo);
+    }
+
+    /**
+     * Expands and shows the remove button
+     * Should be used when going to EDIT mode
+     */
+    public void showRemoveButton()
+    {
+        // Get the Remove Button and the Confirm Button
+        Button removeButton = (Button) findViewById(R.id.Remove);
+
+        // Set the Remove Button to visible
+        removeButton.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Compresses and hides the Remove Button
+     * Should be used when leaving CANCEL mode
+     */
+    public void hideRemoveButton()
+    {
+        // Get the Remove Button and the Confirm Button
+        Button removeButton = (Button) findViewById(R.id.Remove);
+
+        // Set the Remove Button to invisible
+        removeButton.setVisibility(View.GONE);
     }
 
     // Set the string in the Plant Info TextView
@@ -158,6 +196,8 @@ public class GardenDrawingActivity extends ActionBarActivity {
     public void addAnotherClicked(View view)
     {
         //Toast.makeText(this, "Add Another not yet implemented", Toast.LENGTH_SHORT).show();
+        hideRemoveButton();
+        setPlantInfo(speciesName);
         gardenView.addAnotherPlant();
     }
 
@@ -176,15 +216,21 @@ public class GardenDrawingActivity extends ActionBarActivity {
         params.width = getScreenWidth();
         gardenView.setLayoutParams(params);
 
-        // Set the mode to ADD so the GardenView knows to render the temporary plant
-        gardenView.setMode(GardenMode.VIEW);
+        // Let the GardenView know that cancel was clicked
+        gardenView.cancel();
     }
 
     // Services the Remove button on the panel of buttons -- the functionality has not yet been
     // implemented
     public void removeClicked(View view)
     {
-        Toast.makeText(this, "Remove not yet implemented", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Remove not yet implemented", Toast.LENGTH_SHORT).show();
+        gardenView.remove();
+
+        // Save the garden
+        /*try {
+            FileOperation.save(App.SAVEFILE_NAME, Garden.gardenToString(g));
+        }catch(Exception e){e.printStackTrace();}*/
     }
 
     // Services the View Species button on the panel of buttons -- starts the ViewSpeciesInfoActivity
