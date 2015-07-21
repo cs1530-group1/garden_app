@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.shapes.OvalShape;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -14,6 +15,7 @@ import android.view.SurfaceView;
 import java.util.ArrayList;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.content.res.Resources;
 
 /**
  * GardenView : an extension of SurfaceView. Performs the actual drawing of the background
@@ -86,6 +88,8 @@ public class GardenView extends SurfaceView {
     // Does the real work when the class is instantiated
     // This is the code that was previously in 'public GardenView(Context context, Garden g)'
     private void constructor(Context c, Garden g) {
+        App app;
+
         // set the garden
         garden = g;
 
@@ -99,17 +103,41 @@ public class GardenView extends SurfaceView {
         holder = getHolder();
         holder.addCallback(new GardenHolderCallback());
 
-        // Open the background image as a bitmap
-        background = loadBitmapImage(R.drawable.background);
+        // Try to get the app and get the background image
+        app = getApp();
+        if (app != null) {
+            background = app.getBackgroundImage();
+
+            if (background == null) {
+                // Open the background image as a bitmap
+                background = loadBitmapImage(R.drawable.background);
+
+                app.setBackgroundImage(background);
+            }
+        } else {
+
+            // Open the background image as a bitmap
+            background = loadBitmapImage(R.drawable.background);
+        }
 
         // Initially there should be a list of plants -- produce a list of circles from the plants
         plantCircles = getAllPlantCircles();
 
     }
 
+    // Gets the App so that the background image can be gotten/set
+    private App getApp() {
+        GardenDrawingActivity gda = (GardenDrawingActivity)getContext();
+        App app = null;
+        try {
+            app = (App)gda.getApplication();
+        } catch (Exception e) { e.printStackTrace();}
+        return app;
+    }
+
+
     // Sets up the Garden View so that another plant can be added
-    public void addAnotherPlant()
-    {
+    public void addAnotherPlant() {
         setNewPlantSpecies(tempPlant.s.name);
         mode = GardenMode.ADD;
         firstTap = false;
@@ -232,10 +260,35 @@ public class GardenView extends SurfaceView {
      */
     protected Bitmap loadBitmapImage(int imageResourceNumber)
     {
+        Bitmap originalImage = null;
         try {
-            return BitmapFactory.decodeResource(getResources(), imageResourceNumber);
-        }catch(Exception e){return null;}
+            originalImage = BitmapFactory.decodeResource(getResources(), imageResourceNumber);
+            Context c = getContext();
+            int width = originalImage.getWidth();
+            int height = originalImage.getHeight();
+            int nwidth = (int) convertPixelsToDp(width,c);
+            int nheight = (int) convertPixelsToDp(height,c);
+
+            Bitmap bitmapResized = Bitmap.createScaledBitmap(originalImage, nwidth*2, nheight*2, false);
+
+            return bitmapResized;
+        }catch(Exception e) {
+            Log.v("loadBitmapImage", "scaled failed");
+            e.printStackTrace();
+            if (originalImage != null) return originalImage;
+            else return null;
+        }
     }
+
+    // conversion  -- from Stack Overflow
+    // http://stackoverflow.com/questions/21666396/scale-bitmap-on-surfaceview-for-smaller-high-density-screens
+    public static float convertPixelsToDp(float px, Context context){
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float dp = px / (metrics.densityDpi / 160f);
+        return dp;
+    }
+
 
     /**
      * onDraw : actually performs the drawing calls on the SurfaceView's canvas
