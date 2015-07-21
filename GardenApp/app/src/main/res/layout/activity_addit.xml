@@ -159,22 +159,14 @@
             tools:ignore="TextFields"
             android:numeric="integer" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/select_color_button"
-            android:id="@+id/select_color_button"
-            android:layout_below="@+id/size_box"
-            android:layout_centerHorizontal="true"
-            android:onClick="startColorPicker" />
-
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/select_color_button"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true">
+            android:layout_alignParentEnd="true"
+            android:id="@+id/linearLayout"
+            android:layout_below="@+id/color_box">
 
             <Button
                 android:layout_width="wrap_content"
@@ -192,6 +184,34 @@
                 android:layout_weight="1"
                 android:onClick="cancel" />
         </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Color Hex Value:"
+            android:id="@+id/color_title"
+            android:layout_below="@+id/size_title"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignRight="@+id/size_title"
+            android:layout_alignEnd="@+id/size_title"
+            android:textColor="@android:color/black"/>
+
+        <EditText
+            android:textColor="@android:color/black"
+            
+            android:digits="0123456789ABCDEF"
+            android:inputType="textCapCharacters"
+            android:maxLength="6"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/color_box"
+            android:layout_below="@+id/size_box"
+            android:layout_alignLeft="@+id/size_box"
+            android:layout_alignStart="@+id/size_box"
+            android:layout_alignRight="@+id/linearLayout"
+            android:layout_alignEnd="@+id/linearLayout" />
 
 
     </RelativeLayout>
